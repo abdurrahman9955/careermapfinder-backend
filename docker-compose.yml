@@ -1,0 +1,20 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8080:8080"
+
+    env_file:
+      - .env 
+
+    volumes:
+      - ./node_modules:/src/node_modules 
+      - ./uploads:/src/uploads  
+
+    command: ["node", "dist/app.js"]  
+
+volumes:
+  db-data:
+  

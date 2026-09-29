@@ -1,0 +1,31 @@
+FROM node:lts-alpine AS builder
+
+WORKDIR /usr/src/app
+
+RUN apk update && apk add --no-cache \
+    openssl \
+    python3 \
+    make \
+    g++ 
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npx prisma generate
+RUN npm run build 
+
+FROM node:lts-alpine AS final
+
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/prisma ./prisma 
+
+EXPOSE 8080
+
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/app.js"]
