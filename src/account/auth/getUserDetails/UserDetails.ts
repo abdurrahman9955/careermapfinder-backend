@@ -1,9 +1,10 @@
 import express from 'express';
 import prisma from '../../../utils/prisma';
+import { authenticateUser } from '../../../utils/authMiddleware';
 
 const getCurrentUser = express.Router();
 
-getCurrentUser.get('/getAllUsers', async (req, res) => {
+getCurrentUser.get('/getAllUsers', authenticateUser, async (req, res) => {
   try {
     
     const { searchQuery, cursor, limit } = req.query;
@@ -16,14 +17,8 @@ getCurrentUser.get('/getAllUsers', async (req, res) => {
           { id: { contains: searchQuery, mode: 'insensitive' } },
           { email: { contains: searchQuery, mode: 'insensitive' } },
           { fullName: { contains: searchQuery, mode: 'insensitive' } },
-          { companyName: { contains: searchQuery, mode: 'insensitive' } },
-          { industry: { contains: searchQuery, mode: 'insensitive' } },
-          { country: { contains: searchQuery, mode: 'insensitive' } },
-          { role: { contains: searchQuery, mode: 'insensitive' } },
-          { subscriptionType: { contains: searchQuery, mode: 'insensitive' } },
-          { companyAddress: { contains: searchQuery, mode: 'insensitive' } },
-          { handle: { contains: searchQuery, mode: 'insensitive' } },
-          { bio: { contains: searchQuery, mode: 'insensitive' } },
+          { planType: { contains: searchQuery, mode: 'insensitive' } },
+          { billingCycle: { contains: searchQuery, mode: 'insensitive' } },
         ],
       };
     }
@@ -57,28 +52,10 @@ getCurrentUser.get('/getAllUsers', async (req, res) => {
   }
 });
 
-getCurrentUser.get('/userInfo', async (req, res) => {
+getCurrentUser.get('/userInfo/:userId', authenticateUser, async (req, res) => {
   try {
 
-    const userId = req.headers['user-id'] as string; 
-
-    const currentUser = await prisma.user.findUnique({ where: { id: userId, }, });
-
-    if (!currentUser) {
-      return res.status(404).json({ success: false, error: 'User not found' });
-    }
-
-    res.json({ success: true, currentUser });
-  } catch (error) {
-    console.error('Error fetching current user:', error);
-    res.status(500).json({ success: false, error: 'Internal Server Error' });
-  }
-});
-
-getCurrentUser.get('/userInfo/:userId', async (req, res) => {
-  try {
-
-    const userId = req.params.userId; 
+    const userId = req.params.userId as any; 
 
     const currentUser = await prisma.user.findUnique({  where: {  id: userId }, });
 
@@ -93,10 +70,30 @@ getCurrentUser.get('/userInfo/:userId', async (req, res) => {
   }
 });
 
-getCurrentUser.put('/update-user/:userId', async (req, res) => {
+getCurrentUser.put('/update-user/:userId', authenticateUser, async (req, res) => {
   try {
     const userId = req.params.userId as string;
-    const { email, fullName, handle, profileImage, bio, password, isAdmin, isActive, isBlocked, isSuspended } = req.body;
+    const { 
+      email, 
+      fullName, 
+      handle, 
+      profileImage, 
+      bio, 
+      password, 
+
+      phoneNumber,
+      location,
+      academicLevel,                  
+      streamSpecialization,
+      fieldOfInterest,
+      institutionName,
+      graduationYear,
+      targetPercentage,
+      
+      isAdmin, 
+      isActive, 
+      isBlocked, 
+      isSuspended } = req.body;
 
     if (!userId) {
       return res.status(400).json({ success: false, error: 'User ID is required' });
@@ -111,6 +108,16 @@ getCurrentUser.put('/update-user/:userId', async (req, res) => {
         profileImage,
         bio,
         password,
+
+        phoneNumber,
+        location,
+        academicLevel,                  
+        streamSpecialization,
+        fieldOfInterest,
+        institutionName,
+        graduationYear,
+        targetPercentage,
+
         isAdmin,
         isActive,
         isBlocked,
@@ -118,6 +125,18 @@ getCurrentUser.put('/update-user/:userId', async (req, res) => {
       },
      
     });
+
+    const existingResponse = await prisma.updateResponse.findFirst({ where:{userId}});
+                
+    const dashboardsUpdate = new Date().toISOString();
+                  
+    if(existingResponse){
+      await prisma.updateResponse.update({
+        where:{id:existingResponse.id},
+      data: {  
+        settingsUpdate:dashboardsUpdate, 
+      }, });
+    }
    
     res.status(200).json({ success: true, message: 'User account updated successfully' });
   } catch (error) {
@@ -126,13 +145,23 @@ getCurrentUser.put('/update-user/:userId', async (req, res) => {
   }
 });
 
-getCurrentUser.delete('/deleteAccount', async (req, res) => {
+getCurrentUser.delete('/deleteAccount/:userId', authenticateUser, async (req, res) => {
   try {
-    const userId = req.headers['user-id'];
+    const userId = req.params.userId as string;
 
     if (!userId) {
       return res.status(400).json({ success: false, error: 'User ID is required' });
     }
+
+      await prisma.user.update({
+      where: { id: userId },
+      data: {
+        isActive: false,
+        isDeleted:true,
+        deletedAt: new Date(Date.now())
+      },
+     
+    });
     
     res.status(200).json({ success: true, message: 'User account deleted successfully' });
   } catch (error) {
@@ -140,8 +169,6 @@ getCurrentUser.delete('/deleteAccount', async (req, res) => {
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
-
-
 
 export default getCurrentUser;
 

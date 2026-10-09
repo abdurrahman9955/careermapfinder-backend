@@ -51,6 +51,7 @@ passport.use(
               email,
               fullName: firstName && lastName,
               password:'google password',
+              planType:'Basic',
             },
           });
 
@@ -126,7 +127,7 @@ export const googleCallback = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.error('Google OAuth Callback Error:', error);
-    res.redirect('https://www.infobeatlive.com/google/auth/error');
+    res.redirect('https://www.careermapfinder.com/google/auth/error');
   }
 };
 

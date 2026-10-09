@@ -11,7 +11,7 @@ const webhookRouter = express.Router();
 
 const resend = new Resend(process.env.RESEND_API_KEY!); 
 
-const SENDER_EMAIL = 'support@infobeatlive.com'; 
+const SENDER_EMAIL = 'payment@careermapfinder.com'; 
 
 const PRIMARY_COLOR = '#2563EB'; 
 const SUCCESS_COLOR = '#10B981'; 
@@ -29,7 +29,7 @@ async function sendSubscriptionFailureEmail(
     fullName: string,
     planType: string
 ): Promise<void> {
-    const dashboardLink = `https://www.infobeatlive.com/dashboard/main`;
+    const dashboardLink = `https://www.careermapfinder.com/dashboard`;
 
     try {
         await resend.emails.send({
@@ -70,7 +70,7 @@ async function sendSubscriptionFailureEmail(
                     <!-- Header Section - High Impact Red -->
                     <div class="header">
                         <h1>&#10060; Payment Failure Notice</h1>
-                        <p class="logo-text">InfoBeatLive Billing Alert</p>
+                        <p class="logo-text">Carrer Map Finder Billing Alert</p>
                     </div>
 
                     <!-- Main Content Body -->
@@ -79,7 +79,7 @@ async function sendSubscriptionFailureEmail(
 
                         <p style="font-size: 16px;">
                             We are writing to urgently inform you that the payment for your 
-                            ${'InfoBeatLive'} ${planType} subscription could not be processed.
+                            ${'Career Map Finder'} ${planType} subscription could not be processed.
                         </p>
                         
                         <div class="alert-box">
@@ -106,19 +106,19 @@ async function sendSubscriptionFailureEmail(
 
                         <p style="margin-top: 30px; font-size: 15px; color: #4B5563;">
                             Sincerely,<br />
-                            The InfoBeatLive Team
+                            The CareerMapFinder Team
                         </p>
                     </div>
 
                     <!-- Footer Section -->
                     <div class="footer">
-                        <a href="https://www.infobeatlive.com/support" style="color: #9CA3AF; margin: 0 10px;
+                        <a href="https://www.careermapfinder.com/contact" style="color: #9CA3AF; margin: 0 10px;
                          font-weight: 500;
                         ">Support Center</a> | 
-                        <a href="https://www.infobeatlive.com/privacy" style="color: #9CA3AF; margin: 0 10px; 
+                        <a href="https://www.careermapfinder.com/privacy" style="color: #9CA3AF; margin: 0 10px; 
                         font-weight: 500;">Privacy</a>
                         <p style="color: #6B7280; font-size: 11px; margin-top: 15px;">
-                            &copy; ${new Date().getFullYear()} InfoBeatLive, All rights reserved.
+                            &copy; ${new Date().getFullYear()} CareerMapFinder, All rights reserved.
                         </p>
                     </div>
                 </div>
@@ -138,13 +138,13 @@ async function sendSubscriptionFailureEmail(
  * @param {string} fullName
  */
 async function sendResendOtp(email: string, fullName?:string): Promise<void> {
-    const WEBSITE_LINK = 'https://www.infobeatlive.com';
+    const WEBSITE_LINK = 'https://www.careermapfinder.com';
 
     try {
         await resend.emails.send({
-            from: 'noreply@infobeatlive.com',
+            from: 'payment@careermapfinder.com',
             to: email,
-            subject:`Welcome to InfoBeatLive, ${fullName || 'New User'}!`,
+            subject:`Welcome to CareerMap Finder, ${fullName || 'New User'}!`,
             html: `
                 <!DOCTYPE html>
                 <html lang="en">
@@ -172,7 +172,7 @@ async function sendResendOtp(email: string, fullName?:string): Promise<void> {
                     <div class="container">
                         <!-- Header Section - Welcome Green -->
                         <div class="header">
-                            <h1>&#127881; Welcome to InfoBeatLive!</h1>
+                            <h1>&#127881; Welcome to CareerMapFinder!</h1>
                         </div>
                         
                         <!-- Main Content Body -->
@@ -180,26 +180,26 @@ async function sendResendOtp(email: string, fullName?:string): Promise<void> {
                             <p style="font-size: 16px;">Hi ${fullName || 'there'},</p>
 
                             <p style="font-size: 16px;">
-                                Thank you for subscribing and joining the InfoBeatLive academy! 
+                                Thank you for subscribing and joining the Career Map Finder! 
                                 We’re thrilled to have you on board.
                             </p>
 
                             <div style="text-align: center;">
                                 <a href="${WEBSITE_LINK}" class="button">
-                                    Go to InfoBeatLive
+                                    Go to Career Map Finder
                                 </a>
                             </div>
 
                             <p style="margin-top: 35px; font-size: 15px; color: #4B5563;">
                                 Warm regards,<br />
-                                The InfoBeatLive Team
+                                The Career Map Finder Team
                             </p>
                         </div>
 
                         <!-- Footer Section -->
                         <div class="footer">
                             <p style="color: #6B7280; font-size: 11px; margin: 0;">
-                                &copy; ${new Date().getFullYear()} InfoBeatLive, All rights reserved.
+                                &copy; ${new Date().getFullYear()} Career Map Finder, All rights reserved.
                             </p>
                         </div>
                     </div>
@@ -347,9 +347,9 @@ webhookRouter.post('/webhook',  express.raw({ type: 'application/json' }), asyn
             
             await createNotification(
                       customData.user_id,
-                      "InfoBeatLive Billing Alert",
-                      `Thank you for subscribing and joining the InfoBeatLive 
-                       academy!  We’re thrilled to have you on board.`
+                      "Career Map Finder Billing Alert",
+                      `Thank you for subscribing and joining the CareerMapFinder! 
+                       We’re thrilled to have you on board.`
             );
 
             const existingResponse = await prisma.updateResponse.findFirst({
@@ -394,7 +394,7 @@ webhookRouter.post('/webhook',  express.raw({ type: 'application/json' }), asyn
                       customData.user_id,
                       "Payment Failure Notice",
                       ` We are writing to urgently inform you that the payment for your 
-                        InfoBeatLive ${customData.plan_type} subscription could not be processed.
+                        CareerMapFinder ${customData.plan_type} subscription could not be processed.
                         to prevent a temporary suspension of your service. Please update your billing details.`
             );
 

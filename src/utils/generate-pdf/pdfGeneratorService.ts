@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import { Buffer } from 'buffer';
 
 const PUPPETEER_AUTH_SECRET = process.env.PUPPETEER_AUTH_SECRET!; 
-const NEXTJS_BASE_URL = 'http://localhost:3000';
+const NEXTJS_BASE_URL = 'http://www.careermapfinder.com';
 
 export class PDFGeneratorService {
     

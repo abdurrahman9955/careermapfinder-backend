@@ -1,7 +1,7 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"] 
-  previewFeatures = ["postgresqlExtensions"] 
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -10,102 +10,110 @@ datasource db {
 }
 
 model User {
-  id                                  String                                @id @default(cuid())
-  email                               String                                @unique
-  fullName                            String
-  password                            String
-  count                               Int                                   @unique @default(autoincrement())
-  profileImage                        String?  
+  id           String  @id @default(cuid())
+  email        String  @unique
+  fullName     String
+  password     String
+  count        Int     @unique @default(autoincrement())
+  profileImage String?
 
-  phoneNumber                         String?
-  location                            String?
-  bio                                 String?
+  phoneNumber String?
+  location    String?
+  bio         String?
 
-  academicLevel                       String?                     
-  streamSpecialization                String?
-  fieldOfInterest                     String?
-  institutionName                     String?
-  graduationYear                      String?
-  targetPercentage                    String?
+  academicLevel        String?
+  streamSpecialization String?
+  fieldOfInterest      String?
+  institutionName      String?
+  graduationYear       String?
+  targetPercentage     String?
 
-  planType                            String?
-  billingCycle                        String?
-  nextBillingDate                     DateTime?
-  lastPaymentDate                     DateTime?
+  planType        String?
+  billingCycle    String?
+  nextBillingDate DateTime?
+  lastPaymentDate DateTime?
 
-  createdAt                           DateTime                              @default(now())
-  updatedAt                           DateTime                              @updatedAt
-  isAdmin                             Boolean                               @default(false)
-  isBlocked                           Boolean                               @default(false)
-  isSuspended                         Boolean                               @default(false)
-  isActive                            Boolean                               @default(true)
-  emailVerified                       DateTime?                             @map("email_verified")
+  careerCreation     Int @default(0)
+  assessmentCreation Int @default(0)
+  interviewCreation  Int @default(0)
+  alertCreation      Int @default(0)
 
-  notifications                       Notification[]
-  account                             Account?
-  subscription                        Subscription[]
-  invoice                             Invoice[]
-  updateResponse                      UpdateResponse[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  isAdmin       Boolean   @default(false)
+  isBlocked     Boolean   @default(false)
+  isSuspended   Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  isDeleted     Boolean   @default(true)
+  deletedAt     DateTime?
+  emailVerified DateTime? @map("email_verified")
 
-  careers                             CareerExplorerIntake[]
-  interviews                          InterviewSession[]
-  assessments                         ExamSession[]
+  notifications  Notification[]
+  account        Account?
+  subscription   Subscription[]
+  invoice        Invoice[]
+  updateResponse UpdateResponse[]
+  alerts         Alert[]
+
+  careers     CareerExplorerIntake[]
+  reports     CareerReport[]
+  interviews  InterviewSession[]
+  assessments ExamSession[]
 
   @@index([email])
 }
 
 model Account {
-  id               String      @id @default(cuid())
-  userId           String      @unique @map("user_id")
+  id               String    @id @default(cuid())
+  userId           String    @unique @map("user_id")
   type             String
   provider         String
-  handle           String?     @unique
+  handle           String?   @unique
   refresh_token    String?
   access_token     String?
   otp              String?
   otpExpiration    DateTime?
   tempPassword     String?
   emailVerified    DateTime?
-  isVerified       Boolean     @default(false)
+  isVerified       Boolean   @default(false)
   resetToken       String?
   resetTokenExpiry DateTime?
   expires_at       DateTime?
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
   isSuspendedAt    DateTime?
-  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("accounts")
 }
 
 model Activity {
-  id                           String       @id @default(cuid())
-  userId                       String
+  id     String @id @default(cuid())
+  userId String
 
-  isCreatingCareer             Boolean     @default(false)
-  isCreatingAssessment         Boolean     @default(false)
-  isCreatingInterview          Boolean     @default(false)
- 
-  createdAt                    DateTime    @default(now())
-  updatedAt                    DateTime    @updatedAt
+  isCreatingCareer     Boolean @default(false)
+  isCreatingAssessment Boolean @default(false)
+  isCreatingInterview  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-
 model UpdateResponse {
-  id                      String   @id @default(cuid())
-  userId                  String
+  id     String @id @default(cuid())
+  userId String
 
-  careerUpdate            String?
-  assessmentUpdate        String?
-  interviewUpdate         String?
+  careerUpdate     String?
+  assessmentUpdate String?
+  interviewUpdate  String?
 
-  dashboardsUpdate        String?   
-  settingsUpdate          String?   
-  notificationUpdate      String?
+  dashboardsUpdate   String?
+  settingsUpdate     String?
+  notificationUpdate String?
 
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  user                    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Roles {
@@ -119,47 +127,48 @@ enum Roles {
 }
 
 model Employee {
-  id                    String    @id @default(cuid()) 
-  email                 String    @unique @map("emails")
-  userId                String    @unique @map("user_id")
-  role                  Roles
-  fullName              String  
-  country               String
-  fullAddress           String
-  state                 String
-  city                  String
-  phoneNumber           String
-  idCard                String?
-  profileImage          String?
-  governmentId          String?
-  isOnboarded           Boolean    @default(false)
-  isActiveInCompany     Boolean    @default(false) 
-  joinedAt              DateTime   @default(now())
-  leftAt                DateTime? 
-  @@map("employees") 
+  id                String    @id @default(cuid())
+  email             String    @unique @map("emails")
+  userId            String    @unique @map("user_id")
+  role              Roles
+  fullName          String
+  country           String
+  fullAddress       String
+  state             String
+  city              String
+  phoneNumber       String
+  idCard            String?
+  profileImage      String?
+  governmentId      String?
+  isOnboarded       Boolean   @default(false)
+  isActiveInCompany Boolean   @default(false)
+  joinedAt          DateTime  @default(now())
+  leftAt            DateTime?
+
+  @@map("employees")
 }
 
 model Counseling {
-  id                String   @id @default(cuid())
-  fullName          String
-  emailAddress      String
-  phoneNumber       String
-  Country           String
-  State             String
-  academicStatus    String
+  id             String @id @default(cuid())
+  fullName       String
+  emailAddress   String
+  phoneNumber    String
+  country        String
+  state          String
+  academicStatus String
 
-  targetUniversity  String?
-  fieldofStudy      String?
-  graduationYear    String?
+  targetUniversity String?
+  fieldofStudy     String?
+  graduationYear   String?
 
-  primaryFocus      String
-  biggestPainPoint  String
-  questions         String
-  sessionMode       String
-  timeWindow        String
+  primaryFocus     String
+  biggestPainPoint String
+  questions        String
+  sessionMode      String
+  timeWindow       String
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Contact {
@@ -175,7 +184,7 @@ model Contact {
 model Feedback {
   id        String   @id @default(cuid())
   fullName  String
-  email     String
+  email     String?
   reason    String
   statement String
   rating    Float
@@ -184,70 +193,148 @@ model Feedback {
 }
 
 model Subscription {
-  id                          String           @id @default(cuid())
-  userId                      String
-  email                       String
-  planType                    String
-  billingCycle                String
-  amount                      String
-  isActive                    Boolean          @default(false)
-  isSuspended                 Boolean          @default(true)
-  isBlocked                   Boolean          @default(false)
-  trialEndsAt                 DateTime?
-  nextBillingDate             DateTime?
-  lastPaymentDate             DateTime?
-  cancellationDate            DateTime?
-  periodStart                 DateTime?
-  createdAt                   DateTime         @default(now())
-  updatedAt                   DateTime         @updatedAt
-  user                        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String    @id @default(cuid())
+  userId           String
+  email            String
+  planType         String
+  billingCycle     String
+  amount           String
+  isActive         Boolean   @default(false)
+  isSuspended      Boolean   @default(true)
+  isBlocked        Boolean   @default(false)
+  trialEndsAt      DateTime?
+  nextBillingDate  DateTime?
+  lastPaymentDate  DateTime?
+  cancellationDate DateTime?
+  periodStart      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Invoice {
-  id               String           @id @default(cuid())
-  userId           String
-  name             String
-  invoiceId        String
-  amount           String
-  status           String
-  planType         String
-  billingCycle     String
-  nextBillingDate  DateTime
-  isCompleted      Boolean          @default(false)
-  cardType         String?
-  cardNumber       String?
-  cardExpiry       String?
-  isPrimary        Boolean          @default(false)
-  invoiceLink      String?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String   @id @default(cuid())
+  userId          String
+  name            String
+  invoiceId       String
+  amount          String
+  status          String
+  planType        String
+  billingCycle    String
+  nextBillingDate DateTime
+  isCompleted     Boolean  @default(false)
+  cardType        String?
+  cardNumber      String?
+  cardExpiry      String?
+  isPrimary       Boolean  @default(false)
+  invoiceLink     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Earning {
-  id                   String   @id @default(cuid())
-  userId               String
-  planType             String
-  billingCycle         String
-  nextBillingDate      DateTime
-  status               String
-  isCompleted          Boolean          @default(false)
-  amount               Int      @default(0)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id              String   @id @default(cuid())
+  userId          String
+  planType        String
+  billingCycle    String
+  nextBillingDate DateTime
+  status          String
+  isCompleted     Boolean  @default(false)
+  amount          Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Notification {
-  id              String       @id @default(cuid())
-  userId          String?
-  title           String
-  description     String
-  isRead          Boolean     @default(false)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  user            User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  userId      String?
+  title       String
+  description String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum AlertCategory {
+  STUDENT       @map("student")
+  EXAM_CANDIDATE @map("exam_candidate")
+  JOB_SEEKER    @map("job_seeker")
+}
+
+enum AlertFrequency {
+  DAILY            @map("daily")
+  WEEKLY           @map("weekly")
+  MILESTONE_DRIVEN @map("milestone_driven")
+}
+
+enum PreferredChannel {
+  EMAIL        @map("email")
+  WHATSAPP     @map("whatsapp")
+  IN_APP_PUSH  @map("in_app_push")
+}
+
+enum RegistrationStatus {
+  REGISTERED            @map("registered")
+  PREPARING_TO_REGISTER @map("preparing_to_register")
+  AWAITING_RESULTS      @map("awaiting_results")
+}
+
+model Alert {
+  id                      String              @id @default(uuid())
+  userId                  String
+  lastSendingDate         DateTime            @default(now())
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+
+  language                String   
+  category                AlertCategory
+  targetGoalName          String
+  targetDate              DateTime            // Stored as DateTime; use String if strictly storing time-of-day strings
+  preferredFrequency      AlertFrequency
+  notificationChannel     PreferredChannel
+  contactEmail            String
+
+  contactPhone            String?
+  academicStream          String?
+  targetMajorOrDegree     String?
+  currentWeeklyStudyHours Int?
+  weakestSubjects         String[]
+  examName                String?
+
+  examRegistrationStatus  RegistrationStatus?
+  targetScoreGoal         String?
+  priorityTopics          String[]
+  targetRoleTitle         String?
+  targetCompaniesCount    Int?
+  weeklyApplicationGoal   Int?
+
+  focusInterviewSkill     String[]
+  dailyCommitmentMinutes  Int
+  preferredAlertTime      String              // e.g., "08:00" or ISO time string
+  autoPauseOnInactivity   Boolean
+  additionalContextNotes  String?
+  isactive                Boolean   @default(true)
+  isClose                 Boolean   @default(false)
+  alertResponse           AlertResponse[]
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("alert_form_data")
+}
+
+model AlertResponse {
+  id                      String              @id @default(uuid())
+  alertId                 String              
+
+  title                   String?
+  description             String?
+
+  alert                   Alert               @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+
+}
 
 enum ExamCategory {
   ACADEMIC
@@ -255,18 +342,18 @@ enum ExamCategory {
 }
 
 enum ExamFormat {
-  OBJECTIVE_ONLY       // Single/Multiple Choice (JAMB, SAT)
-  THEORY_ONLY          // Written/Essay/Long Answer (WAEC/NECO Paper 2)
-  HYBRID               // Mixed Choice and Theory (CBSE, ICSE, WAEC combined)
-  PRACTICAL_CODING     // Programming/Technical Tasks
+  OBJECTIVE_ONLY // Single/Multiple Choice (JAMB, SAT)
+  THEORY_ONLY // Written/Essay/Long Answer (WAEC/NECO Paper 2)
+  HYBRID // Mixed Choice and Theory (CBSE, ICSE, WAEC combined)
+  PRACTICAL_CODING // Programming/Technical Tasks
 }
 
 enum QuestionType {
-  MULTIPLE_CHOICE      // Single select (A, B, C, D)
-  MULTIPLE_SELECT      // Multi-select checkboxes
-  SHORT_INPUT          // One word, line, or numerical answer
-  ESSAY_LONG_TEXT      // Long form essay, letter writing, theoretical explanation
-  CODE_EXECUTION       // Code submission with specific runtime requirements
+  MULTIPLE_CHOICE // Single select (A, B, C, D)
+  MULTIPLE_SELECT // Multi-select checkboxes
+  SHORT_INPUT // One word, line, or numerical answer
+  ESSAY_LONG_TEXT // Long form essay, letter writing, theoretical explanation
+  CODE_EXECUTION // Code submission with specific runtime requirements
 }
 
 enum QuestionVisualType {
@@ -292,102 +379,101 @@ enum ExamStatus {
 
 // Represents a user's generated exam attempt
 model ExamSession {
-  id                  String          @id @default(uuid())
-  userId              String 
-  langauge            String         
-  category            ExamCategory
-  format              ExamFormat      @default(HYBRID)
- 
-  // Captured User Context (Prompt Meta)
-  country             String?
-  state               String?
-  examName            String?
-  stream              String?
-  subject             String?
-  targetProgram       String?         // e.g., Computer Science
-  targetCareer        String?         // e.g., Software Engineer
-  primaryObjective    String?         // e.g., University Admission
-  industry            String?         // e.g., Cloud Computing
-  certVendor          String?         // e.g., AWS, Cisco
-  examDescription     String?
-  academicBackground  String?
-  
-  difficulty          DifficultyLevel
-  targetScore         Int
-  timeLimitMinutes    Int             @default(60)
-  
-  status              ExamStatus      @default(GENERATED)
-  startedAt           DateTime?
-  submittedAt         DateTime?
-  
-  questions           ExamQuestion[]
-  evaluationReport    EvaluationReport?
+  id       String       @id @default(uuid())
+  userId   String
+  language String
+  category ExamCategory
+  format   ExamFormat   @default(HYBRID)
 
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Captured User Context (Prompt Meta)
+  country            String?
+  state              String?
+  examName           String?
+  stream             String?
+  subject            String?
+  targetProgram      String? // e.g., Computer Science
+  targetCareer       String? // e.g., Software Engineer
+  primaryObjective   String? // e.g., University Admission
+  industry           String? // e.g., Cloud Computing
+  certVendor         String? // e.g., AWS, Cisco
+  examDescription    String?
+  academicBackground String?
+
+  difficulty       DifficultyLevel
+  targetScore      Int
+  timeLimitMinutes Int             @default(60)
+
+  status      ExamStatus @default(GENERATED)
+  startedAt   DateTime?
+  submittedAt DateTime?
+
+  questions        ExamQuestion[]
+  evaluationReport EvaluationReport?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Dynamically generated questions by AI
 model ExamQuestion {
-  id               String             @id @default(uuid())
-  examSessionId    String
-  examSession      ExamSession        @relation(fields: [examSessionId], references: [id], onDelete: Cascade)
-  
-  questionNumber   Int
-  sectionTitle     String?            // e.g., "Section A: Multiple Choice", "Section B: Essay"
-  questionType     QuestionType
-  visualType       QuestionVisualType @default(TEXT)
-  
-  prompt           String             @db.Text
-  supplementaryData Json?             // Code snippets, Markdown tables, or Image URLs
-  
-  options          Json?              // Choice items: [{ label: "A", text: "..." }]
-  maxMarks         Int                @default(1)
-  
-  rubric           Json?              // Evaluation rubric for essay/short answers
-  correctAnswer    String?            // Used for deterministic grading of objective questions
+  id            String      @id @default(uuid())
+  examSessionId String
+  examSession   ExamSession @relation(fields: [examSessionId], references: [id], onDelete: Cascade)
 
-  userResponses    UserResponse[]
+  questionNumber Int
+  sectionTitle   String? // e.g., "Section A: Multiple Choice", "Section B: Essay"
+  questionType   QuestionType
+  visualType     QuestionVisualType @default(TEXT)
 
-  createdAt        DateTime           @default(now())
-  
+  prompt            String @db.Text
+  supplementaryData Json? // Code snippets, Markdown tables, or Image URLs
+
+  options  Json? // Choice items: [{ label: "A", text: "..." }]
+  maxMarks Int   @default(1)
+
+  rubric        Json? // Evaluation rubric for essay/short answers
+  correctAnswer String? // Used for deterministic grading of objective questions
+
+  userResponses UserResponse[]
+
+  createdAt DateTime @default(now())
+
   @@index([examSessionId, questionNumber])
 }
 
 // User-submitted answers
 model UserResponse {
-  id               String       @id @default(uuid())
-  questionId       String
- 
-  answerText       String?      @db.Text // Selected option ("A") or written response/code
-  selectedOptions  String[]     // Multi-select answers
-  timeSpentSeconds Int          @default(0)
+  id         String @id @default(uuid())
+  questionId String
 
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  question         ExamQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  
+  answerText       String?  @db.Text // Selected option ("A") or written response/code
+  selectedOptions  String[] // Multi-select answers
+  timeSpentSeconds Int      @default(0)
+
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  question  ExamQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
 
 // AI-Generated Comprehensive Evaluation & PDF Report Data Model
 model EvaluationReport {
-  id                   String      @id @default(uuid())
-  examSessionId        String      @unique
- 
-  totalMarksObtained   Float
-  totalMaxMarks        Float
-  percentage           Float
-  grade                String?     // e.g., "A1", "Pass", "Distinction"
-  
-  overallFeedback      String      @db.Text
-  strengths            String[]
-  improvementAreas     String[]
-  categoryBreakdown    Json        // Topic/Category wise performance breakdown
-  
-  generatedAt          DateTime    @default(now())
-  examSession          ExamSession @relation(fields: [examSessionId], references: [id], onDelete: Cascade)
-  
+  id            String @id @default(uuid())
+  examSessionId String @unique
+  subject       String
+
+  totalMarksObtained Float
+  totalMaxMarks      Float
+  percentage         Float
+  grade              String? // e.g., "A1", "Pass", "Distinction"
+
+  overallFeedback   String   @db.Text
+  strengths         String[]
+  improvementAreas  String[]
+  categoryBreakdown Json // Topic/Category wise performance breakdown
+
+  generatedAt DateTime    @default(now())
+  examSession ExamSession @relation(fields: [examSessionId], references: [id], onDelete: Cascade)
 }
 
 // ==========================================
@@ -397,11 +483,11 @@ model EvaluationReport {
 enum CareerStage {
   STUDENT_INTERN
   RECENT_GRADUATE
-  ENTRY_LEVEL      
-  MID_LEVEL        
-  SENIOR           
-  STAFF_PRINCIPAL  
-  EXECUTIVE        
+  ENTRY_LEVEL
+  MID_LEVEL
+  SENIOR
+  STAFF_PRINCIPAL
+  EXECUTIVE
 }
 
 enum WorkArrangement {
@@ -412,10 +498,10 @@ enum WorkArrangement {
 }
 
 enum InterviewerStyle {
-  SUPPORTIVE_COACH    
-  STRICT_TECH_LEAD    
-  TOP_TECH_ASSESSOR   
-  TALENT_ACQUISITION 
+  SUPPORTIVE_COACH
+  STRICT_TECH_LEAD
+  TOP_TECH_ASSESSOR
+  TALENT_ACQUISITION
 }
 
 enum QuestionCategory {
@@ -428,11 +514,11 @@ enum QuestionCategory {
 }
 
 enum VisualLayoutType {
-  CODE_EDITOR        
-  WHITEBOARD_DIAGRAM  
-  STAR_STRUCTURED     
-  METRIC_TABLE        
-  TEXT_MARKDOWN      
+  CODE_EDITOR
+  WHITEBOARD_DIAGRAM
+  STAR_STRUCTURED
+  METRIC_TABLE
+  TEXT_MARKDOWN
 }
 
 enum InterviewStatus {
@@ -443,122 +529,119 @@ enum InterviewStatus {
 }
 
 model InterviewSession {
-  id                    String              @id @default(uuid())
-  userId                String
-  langauge              String
+  id       String @id @default(uuid())
+  userId   String
+  language String
 
   // Role Target Setup
-  targetJobTitle        String              // e.g., "Senior Backend Engineer", "Financial Analyst"
-  industryDomain        String              // e.g., "Fintech", "Healthcare Software", "Cybersecurity"
-  careerStage           CareerStage
-  workArrangement       WorkArrangement[]
-  targetCountries       String[]            // e.g., ["United States", "Nigeria", "Remote"]
+  targetJobTitle  String // e.g., "Senior Backend Engineer", "Financial Analyst"
+  industryDomain  String // e.g., "Fintech", "Healthcare Software", "Cybersecurity"
+  careerStage     CareerStage
+  workArrangement WorkArrangement[]
+  targetCountries String[] // e.g., ["United States", "Nigeria", "Remote"]
 
   // Candidate Profile Snapshot
-  isExperienced         Boolean             @default(true)
+  isExperienced         Boolean  @default(true)
   highestDegree         String
-  institution           String?             // University or college name
+  institution           String? // University or college name
   mostRecentEmployer    String?
-  yearsOfExperience     Int                 @default(0)
+  yearsOfExperience     Int      @default(0)
   currentJobTitle       String?
-  coreSkills            String[]            // e.g., ["React", "PostgreSQL", "System Design"]
-  summaryOfAchievements String              @db.Text
+  coreSkills            String[] // e.g., ["React", "PostgreSQL", "System Design"]
+  summaryOfAchievements String   @db.Text
 
   // Interview Configuration
   selectedCategories    QuestionCategory[]
   interviewerStyle      InterviewerStyle
-  estimatedDurationMins Int                 @default(30)
-  jobDescription        String              @db.Text
+  estimatedDurationMins Int                @default(30)
+  jobDescription        String             @db.Text
 
   // Session State
-  status                InterviewStatus     @default(CONFIGURED)
-  startedAt             DateTime?
-  completedAt           DateTime?
+  status      InterviewStatus @default(CONFIGURED)
+  startedAt   DateTime?
+  completedAt DateTime?
 
   // Relations
-  questions             InterviewQuestion[]
-  evaluationReport      InterviewEvaluationReport?
+  questions        InterviewQuestion[]
+  evaluationReport InterviewEvaluationReport?
 
-  createdAt             DateTime            @default(now())
-  updatedAt             DateTime            @updatedAt
-  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
-
 // AI-Generated Questions for the Session
 model InterviewQuestion {
-  id                     String              @id @default(uuid())
-  interviewSessionId     String
+  id                 String @id @default(uuid())
+  interviewSessionId String
 
-  questionNumber         Int
-  category               QuestionCategory
-  visualLayout           VisualLayoutType    @default(TEXT_MARKDOWN)
-  
-  title                  String
-  prompt                 String              @db.Text
-  timeAllocationMins     Int                 @default(5)
+  questionNumber Int
+  category       QuestionCategory
+  visualLayout   VisualLayoutType @default(TEXT_MARKDOWN)
+
+  title              String
+  prompt             String @db.Text
+  timeAllocationMins Int    @default(5)
 
   // Interactive UI Configurations
-  codeStarterSnippet     String?             @db.Text // Pre-populated code stub for coding questions
-  codeLanguage           String?             // e.g., "typescript", "python", "sql"
-  supplementaryData      Json?               // Markdown tables, case metrics, architecture specs
-  
+  codeStarterSnippet String? @db.Text // Pre-populated code stub for coding questions
+  codeLanguage       String? // e.g., "typescript", "python", "sql"
+  supplementaryData  Json? // Markdown tables, case metrics, architecture specs
+
   // Evaluation Guidelines
-  rubricCriteria         Json                // Expected points, key architectural trade-offs, STAR expectations
+  rubricCriteria Json // Expected points, key architectural trade-offs, STAR expectations
 
-  candidateResponses     CandidateResponse[]
+  candidateResponses CandidateResponse[]
 
-  createdAt              DateTime            @default(now())
-  interviewSession       InterviewSession    @relation(fields: [interviewSessionId], references: [id], onDelete: Cascade)
+  createdAt        DateTime         @default(now())
+  interviewSession InterviewSession @relation(fields: [interviewSessionId], references: [id], onDelete: Cascade)
 
   @@index([interviewSessionId, questionNumber])
 }
 
 // Candidate Submissions Per Question
 model CandidateResponse {
-  id                     String            @id @default(uuid())
-  questionId             String
-  
-  responseText           String?           @db.Text // Verbal response transcript or essay
-  submittedCode          String?           @db.Text // Code editor contents
-  selectedChoices        String[]          // For structured options/decisions
-  timeSpentSeconds       Int               @default(0)
+  id         String @id @default(uuid())
+  questionId String
 
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @updatedAt
-  question               InterviewQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  responseText     String?  @db.Text // Verbal response transcript or essay
+  submittedCode    String?  @db.Text // Code editor contents
+  selectedChoices  String[] // For structured options/decisions
+  timeSpentSeconds Int      @default(0)
+
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  question  InterviewQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
 
 // Comprehensive AI Evaluation Report
 model InterviewEvaluationReport {
-  id                     String           @id @default(uuid())
-  interviewSessionId     String           @unique
+  id                 String @id @default(uuid())
+  interviewSessionId String @unique
 
   // Overall Scoring
-  overallScore           Float            // Scaled score out of 100
-  hireRecommendation     String           // e.g., "Strong Hire", "Lean Hire", "Lean No Hire", "No Hire"
-  executiveSummary       String           @db.Text
+  overallScore       Float // Scaled score out of 100
+  hireRecommendation String // e.g., "Strong Hire", "Lean Hire", "Lean No Hire", "No Hire"
+  executiveSummary   String @db.Text
 
   // Analytics Radar Scores (0 - 100)
-  technicalProficiency   Float
-  communicationClarity   Float
-  problemSolvingLogic    Float
-  cultureAndLeadership   Float
-  domainKnowledge        Float
+  technicalProficiency Float
+  communicationClarity Float
+  problemSolvingLogic  Float
+  cultureAndLeadership Float
+  domainKnowledge      Float
 
   // Key Qualitative Findings
-  strengths              String[]
-  weaknesses             String[]
-  keyImprovementAreas    String[]
+  strengths           String[]
+  weaknesses          String[]
+  keyImprovementAreas String[]
 
-  categoryBreakdowns     Json             // Per-category scores and feedback
+  categoryBreakdowns Json // Per-category scores and feedback
 
-  generatedAt            DateTime         @default(now())
-  interviewSession       InterviewSession @relation(fields: [interviewSessionId], references: [id], onDelete: Cascade)
-
+  generatedAt      DateTime         @default(now())
+  interviewSession InterviewSession @relation(fields: [interviewSessionId], references: [id], onDelete: Cascade)
 }
 
 // ==========================================
@@ -617,37 +700,37 @@ enum QualificationTarget {
 // ==========================================
 
 model CareerExplorerIntake {
-  id                      String                  @id @default(cuid())
-  userId                  String                 // Optional link to logged-in user
-  langauge                String
-  journeyStage            AcademicJourneyStage
-  targetRoleOrField       String
-  academicStream          AcademicStream
-  homeCountry             String
-  stateCity               String
-  targetStudyCountry      String
-  
+  id                 String               @id @default(cuid())
+  userId             String // Optional link to logged-in user
+  language           String
+  journeyStage       AcademicJourneyStage
+  targetRoleOrField  String
+  academicStream     AcademicStream
+  homeCountry        String
+  stateCity          String
+  targetStudyCountry String
+
   // Student Specific Fields
-  currentGradeLevel       String?                 // e.g., Grade 11, SS2, A-Levels
+  currentGradeLevel       String? // e.g., Grade 11, SS2, A-Levels
   currentSchoolName       String?
   keySubjectsMajor        String
-  estimatedGpaPerformance String                  // e.g., 3.8/4.0 GPA, First Class
+  estimatedGpaPerformance String // e.g., 3.8/4.0 GPA, First Class
   preferredQualification  QualificationTarget
-  
-  // Preferences & Priorities
-  primaryPriority         PrimaryCareerPriority
-  preferredWorkEnv        PreferredWorkEnvironment
-  workIntensity           WorkIntensityPreference
-  
-  // Qualitative Background
-  personalBackground      String                  @db.Text
-  specificQuestions       String?                 @db.Text
-  
-  createdAt               DateTime                @default(now())
-  updatedAt               DateTime                @updatedAt
 
-  reports                 CareerReport[]
-  user                    User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Preferences & Priorities
+  primaryPriority  PrimaryCareerPriority
+  preferredWorkEnv PreferredWorkEnvironment
+  workIntensity    WorkIntensityPreference
+
+  // Qualitative Background
+  personalBackground String  @db.Text
+  specificQuestions  String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reports CareerReport[]
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([targetRoleOrField])
@@ -658,125 +741,126 @@ model CareerExplorerIntake {
 // ==========================================
 
 model CareerReport {
-  id                      String                  @id @default(cuid())
-  intakeId                String
- 
+  id       String @id @default(cuid())
+  intakeId String
+  userId   String
+
   // Page 1: Career Identity & Overview
-  careerName              String
-  careerOverview          String                  @db.Text
-  whatProfessionalDoes    String                  @db.Text
-  whyChooseThisCareer     String                  @db.Text
-  whoIsSuitableFor        String                  @db.Text
-  requiredSkills          String[]
-  importantSubjects       String[]
-  workEnvironmentDesc     String                  @db.Text
-  typicalDayLife          String                  @db.Text
+  careerName           String
+  careerOverview       String   @db.Text
+  whatProfessionalDoes String   @db.Text
+  whyChooseThisCareer  String   @db.Text
+  whoIsSuitableFor     String   @db.Text
+  requiredSkills       String[]
+  importantSubjects    String[]
+  workEnvironmentDesc  String   @db.Text
+  typicalDayLife       String   @db.Text
 
   // Page 2: Education & Eligibility Roadmap
-  class10Requirements     String                  @db.Text
-  class11_12Stream        String
-  subjectsRequired        String[]
-  minQualification        QualificationTarget
-  ageLimit                String?
-  nationalityEligibility  String?                 @db.Text
-  medicalRequirements     String?                 @db.Text
-  courseOptions           String[]
-  courseDuration          String                  // e.g., "4 Years (B.Sc) + 2 Years (M.Sc)"
-  degreeRequired          String
+  class10Requirements    String              @db.Text
+  class11_12Stream       String
+  subjectsRequired       String[]
+  minQualification       QualificationTarget
+  ageLimit               String?
+  nationalityEligibility String?             @db.Text
+  medicalRequirements    String?             @db.Text
+  courseOptions          String[]
+  courseDuration         String // e.g., "4 Years (B.Sc) + 2 Years (M.Sc)"
+  degreeRequired         String
 
   // Page 3: Entrance Examinations & Strategy
-  entranceExams           String[]
-  nationalExams           String[]
-  stateExams              String[]
-  universityExams         String[]
-  examEligibility         String                  @db.Text
-  examPattern             String                  @db.Text
-  examSubjects            String[]
-  numberOfQuestions       Int?
-  markingScheme           String?
-  examFrequency           String?                 // e.g., "Twice Annually (Jan / April)"
-  applicationProcess      String                  @db.Text
-  applicationFees         String?
-  importantDates          String?                 @db.Text
-  prepStrategy            String                  @db.Text
-  recommendedBooks        String[]
-  prepTimeline            String                  @db.Text
+  entranceExams      String[]
+  nationalExams      String[]
+  stateExams         String[]
+  universityExams    String[]
+  examEligibility    String   @db.Text
+  examPattern        String   @db.Text
+  examSubjects       String[]
+  numberOfQuestions  Int?
+  markingScheme      String?
+  examFrequency      String? // e.g., "Twice Annually (Jan / April)"
+  applicationProcess String   @db.Text
+  applicationFees    String?
+  importantDates     String?  @db.Text
+  prepStrategy       String   @db.Text
+  recommendedBooks   String[]
+  prepTimeline       String   @db.Text
 
   // Page 4: Admissions & College Guidance
-  admissionProcess        String                  @db.Text
-  counsellingProcess      String                  @db.Text
-  quotaReservations       String?                 @db.Text
-  topGovtColleges         String[]
-  topPrivateColleges      String[]
-  collegeSelectionGuide   String                  @db.Text
-  expectedCutoffs         String?                 @db.Text
-  feeStructure            String                  @db.Text
-  availableScholarships   String[]
+  admissionProcess      String   @db.Text
+  counsellingProcess    String   @db.Text
+  quotaReservations     String?  @db.Text
+  topGovtColleges       String[]
+  topPrivateColleges    String[]
+  collegeSelectionGuide String   @db.Text
+  expectedCutoffs       String?  @db.Text
+  feeStructure          String   @db.Text
+  availableScholarships String[]
 
   // Page 5: Career Journey & Growth Milestones
-  stepByStepRoadmap       String                  @db.Text
-  internshipRequirements  String                  @db.Text
-  licensingRegistration   String?                 @db.Text
-  entryLevelRoles         String[]
-  midLevelRoles           String[]
-  seniorLevelRoles        String[]
-  specializations         String[]
-  superSpecializations    String[]
-  higherEducationPaths    String[]
-  alternativeCareerPaths  String[]
+  stepByStepRoadmap      String   @db.Text
+  internshipRequirements String   @db.Text
+  licensingRegistration  String?  @db.Text
+  entryLevelRoles        String[]
+  midLevelRoles          String[]
+  seniorLevelRoles       String[]
+  specializations        String[]
+  superSpecializations   String[]
+  higherEducationPaths   String[]
+  alternativeCareerPaths String[]
 
   // Page 6: Employment Sectors & Opportunities
-  govtJobOpportunities    String                  @db.Text
-  privateJobOpportunities String                  @db.Text
-  selfEmploymentOptions   String                  @db.Text
+  govtJobOpportunities    String   @db.Text
+  privateJobOpportunities String   @db.Text
+  selfEmploymentOptions   String   @db.Text
   hiringIndustries        String[]
   topGlobalEmployers      String[]
   primeWorkLocations      String[]
-  homeVsAbroadOverview    String                  @db.Text
-  freelanceOpportunities  String?                 @db.Text
+  homeVsAbroadOverview    String   @db.Text
+  freelanceOpportunities  String?  @db.Text
 
   // Page 7: Financial Analytics & Salary Trajectory
-  startingSalaryRange     String                  // e.g., "$85,000 - $110,000"
-  averageSalary           String
-  experiencedSalary       String
+  startingSalaryRange      String // e.g., "$85,000 - $110,000"
+  averageSalary            String
+  experiencedSalary        String
   highestPotentialEarnings String
-  govtSalaryScale         String?
-  privateSectorSalary     String
-  selfEmploymentEarnings  String?
-  salaryByExperience      Json                    // Array of { stage: string, range: string }
-  salaryBySpecialization  Json                    // Array of { specialization: string, avgSalary: string }
-  keySalaryFactors        String[]
+  govtSalaryScale          String?
+  privateSectorSalary      String
+  selfEmploymentEarnings   String?
+  salaryByExperience       Json // Array of { stage: string, range: string }
+  salaryBySpecialization   Json // Array of { specialization: string, avgSalary: string }
+  keySalaryFactors         String[]
 
   // Page 8: Global Mobility & Practice Abroad
-  topCountriesAbroad      String[]
-  requiredExamsAbroad     String[]                // e.g., "USMLE", "NCLEX", "GRE"
-  licensingAbroad         String                  @db.Text
-  educationEquivalency    String                  @db.Text
-  salaryAbroadComparison  Json                    // Array of { country: string, avgSalary: string, visaEase: string }
-  immigrationRelocationPath String               @db.Text
+  topCountriesAbroad        String[]
+  requiredExamsAbroad       String[] // e.g., "USMLE", "NCLEX", "GRE"
+  licensingAbroad           String   @db.Text
+  educationEquivalency      String   @db.Text
+  salaryAbroadComparison    Json // Array of { country: string, avgSalary: string, visaEase: string }
+  immigrationRelocationPath String   @db.Text
 
   // Page 9: Realities, Stress & Work-Life Balance
-  advantages              String[]
-  disadvantages           String[]
-  keyChallenges           String[]
-  workLifeBalanceRating   Int                     // 1 to 10
-  typicalWorkingHours     String                  // e.g., "50-60 hrs / week"
-  stressLevel             String                  // e.g., "High / High-Stakes"
-  jobSecurityRating       Int                     // 1 to 10
-  competitionLevel        String                  // e.g., "Extremely High"
-  careerGrowthVelocity    String
+  advantages            String[]
+  disadvantages         String[]
+  keyChallenges         String[]
+  workLifeBalanceRating Int // 1 to 10
+  typicalWorkingHours   String // e.g., "50-60 hrs / week"
+  stressLevel           String // e.g., "High / High-Stakes"
+  jobSecurityRating     Int // 1 to 10
+  competitionLevel      String // e.g., "Extremely High"
+  careerGrowthVelocity  String
 
   // Page 10: Future-Proofing, AI Impact & Tech Horizons
-  futureDemandOutlook     String                  @db.Text
-  aiAutomationImpact      String                  @db.Text
-  aiReplacementRiskLevel  String                  @db.Text // e.g., "Low Risk / High Human Judgment"
+  futureDemandOutlook     String   @db.Text
+  aiAutomationImpact      String   @db.Text
+  aiReplacementRiskLevel  String   @db.Text // e.g., "Low Risk / High Human Judgment"
   emergingOpportunities   String[]
   emergingSpecializations String[]
 
-  createdAt               DateTime                @default(now())
-  updatedAt               DateTime                @updatedAt
-  intake                  CareerExplorerIntake    @relation(fields: [intakeId], references: [id], onDelete: Cascade)
-  
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  intake    CareerExplorerIntake @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([intakeId])
   @@index([careerName])

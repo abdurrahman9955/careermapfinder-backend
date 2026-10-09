@@ -5,7 +5,7 @@ dotenv.config();
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
-const SENDER_EMAIL = 'noreply@infobeatlive.com';
+const SENDER_EMAIL = 'noreply@careermapfinder.com';
 
 /**
  * @param title The email's main subject/title.
@@ -79,19 +79,17 @@ function getBaseEmailHtml(title: string, content: string, ctaText?: string, ctaL
                         Stay ahead of the curve.
                     </p>
                     <div style="margin: 15px 0;">
-                        <a href="https://www.infobeatlive.com/support" style="color: #9CA3AF; margin: 0 10px;
+                        <a href="https://www.careermapfinder.com/contact" style="color: #9CA3AF; margin: 0 10px;
                          font-weight: 500;">Support Center</a> | 
-                        <a href="https://www.infobeatlive.com/privacy" style="color: #9CA3AF; margin: 0 10px;
+                        <a href="https://www.careermapfinder.com/privacy" style="color: #9CA3AF; margin: 0 10px;
                          font-weight: 500;">Privacy</a> |
-                        <a href="https://www.infobeatlive.com/contact" style="color: #9CA3AF; margin: 0 10px;
-                         font-weight: 500;">Contact Us</a>
                     </div>
                     <p style="color: #6B7280; font-size: 11px; margin-top: 15px; line-height: 1.5;">
-                        You are receiving this email because you have an active account with InfoBeatLive.<br>
+                        You are receiving this email because you have an active account with Career Map FInder.<br>
                         This is an automated system email. Please do not reply directly to this message.
                     </p>
                     <p style="color: #6B7280; font-size: 11px; margin-top: 5px;">
-                        © ${new Date().getFullYear()} InfoBeatLive, All rights reserved.
+                        © ${new Date().getFullYear()} Career Map FInder, All rights reserved.
                       | 123 Business Blvd, Suite 400, City, State, 10001
                     </p>
                 </div>
@@ -111,13 +109,13 @@ export async function sendSubscriptionReminderEmail(
     daysRemaining: number,
     nextBillingDate: string
 ): Promise<void> {
-    const dashboardLink = `https://www.infobeatlive.com/dashboard/main`;
+    const dashboardLink = `https://www.careermapfinder.com/dashboard`;
     const WARNING_COLOR = '#F97316'; // Orange
 
     const content = `
         <p>Hello,</p>
         <p>
-            This is a friendly reminder that the subscription for ${'InfoBeatLive'} is scheduled to renew in 
+            This is a friendly reminder that the subscription for ${'Career Map FInder'} is scheduled to renew in 
             ${ daysRemaining} days on ${nextBillingDate}.
         </p>
         <p>
@@ -150,10 +148,10 @@ export async function sendSubscriptionReminderEmail(
         await resend.emails.send({
             from: SENDER_EMAIL,
             to: toEmail,
-            subject: `Action Required: Your ${'InfoBeatLive'} Subscription Renews in ${daysRemaining} Days`,
+            subject: `Action Required: Your ${'Career Map FInder'} Subscription Renews in ${daysRemaining} Days`,
             html: emailHtml,
         });
-        console.log(`[Email] Reminder email sent to ${toEmail} for company ${'InfoBeatLive'}.`);
+        console.log(`[Email] Reminder email sent to ${toEmail} for company ${'Carrer Map FInder'}.`);
     } catch (error) {
         console.error(`[Email] Resend subscription reminder email error for ${toEmail}:`, error);
         throw new Error('Failed to send subscription reminder email via Resend'); 
@@ -168,13 +166,13 @@ export async function sendSuspensionNotificationEmail(
     toEmail: string,
     nextBillingDate: string
 ): Promise<void> {
-    const pricingLink = `https://www.infobeatlive.com/pricing`;
+    const pricingLink = `https://www.careermapfinder.com/pricing`;
     const ERROR_COLOR = '#DC2626'; // Red
 
     const content = `
         <p>Hello,</p>
         <p>
-            We regret to inform you that the subscription for ${'InfoBeatLive'} has been temporarily suspended due to an 
+            We regret to inform you that the subscription for ${'Career Map Finder'} has been temporarily suspended due to an 
             issue with the renewal on ${nextBillingDate}.
         </p>
         <p>
@@ -206,10 +204,10 @@ export async function sendSuspensionNotificationEmail(
         await resend.emails.send({
             from: SENDER_EMAIL,
             to: toEmail,
-            subject: `Account Suspended: Resolve Payment Issue for ${'InfoBeatLive'}`,
+            subject: `Account Suspended: Resolve Payment Issue for ${'Career Map FInder'}`,
             html: emailHtml,
         });
-        console.log(`[Email] Suspension email sent to ${toEmail} for company ${'InfoBeatLive'}.`);
+        console.log(`[Email] Suspension email sent to ${toEmail} for company ${'Carrer Map Finder'}.`);
     } catch (error) {
         console.error(`[Email] Resend suspension email error for ${toEmail}:`, error);
         throw new Error('Failed to send suspension notification email via Resend');

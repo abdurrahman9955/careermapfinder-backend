@@ -6,7 +6,6 @@ export class ClassContactService {
     return await prisma.contact.findMany({ });
   }
 
-
   async createContact(data: {
     name: string;
     email: string;

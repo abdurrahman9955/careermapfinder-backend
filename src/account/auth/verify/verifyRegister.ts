@@ -155,7 +155,7 @@ routerOtpVerification.post('/resendSignUpOtp', async (req: Request, res: Respons
 async function sendResendOtp(email: string, otp: number): Promise<void> {
   try {
     await resend.emails.send({
-      from: 'noreply@infobeatlive.com',
+      from: 'noreply@careermapfinder.com',
       to: email,
       subject: 'Your One-Time Password (OTP)',
       html: `
@@ -163,7 +163,7 @@ async function sendResendOtp(email: string, otp: number): Promise<void> {
          border: 1px solid #e0e0e0; border-radius: 8px; background-color: #f9f9f9;">
           <h2 style="color: #333;">Hello,</h2>
           <p style="font-size: 16px; color: #555;">
-            We received a request for updating your <strong>Infobeatlive</strong> account password.
+            We received a request for updating your <strong>CareerMapFinder</strong> account password.
           </p>
           <p style="font-size: 18px; color: #000;">
             <strong>Your OTP code is:</strong>
@@ -182,7 +182,7 @@ async function sendResendOtp(email: string, otp: number): Promise<void> {
           </p>
           <p style="font-size: 13px; color: #888;">
             Best Regards,<br/>
-            The Infobeatlive Auth Team
+            The CareerMapFinder Auth Team
           </p>
         </div>
       `,

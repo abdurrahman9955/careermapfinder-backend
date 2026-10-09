@@ -24,7 +24,6 @@ import routerOtpReset from './account/auth/verify/verifyResetPassword';
 import getCurrentUser from './account/auth/getUserDetails/UserDetails';
 
 import contactRouter from './account/contact/contactRoute';
-import profileRoutes from './account/profile/profile';
 
 import googleRouter from './account/auth/googleAuth/google';
 import routerHealth from './health/health';
@@ -36,16 +35,35 @@ import notificationRouter from './account/notification/routes';
 import subscriptionRouter from './account/payment/subscription/routes';
 import invoiceRouter from './account/payment/invoice/routes';
 
+import feedbackRouter from './account/feedback/feedbackRoute';
+import counselingRouter from './account/counseling/counselingRoute';
 
+import careerExplorerRouter from './career-explorer/careerExplorer.routes';
+import assessmentQuestionRouter from './assessments/exam-question/exam-question.routes';
+import assessmentReportRouter from './assessments/evaluation-report/evaluation-report.routes';
+
+import assessmentResponseRouter from './assessments/user-response/user-response.routes';
+import assessmentSessionRouter from './assessments/exam-session/exam-session.routes';
+import interviewQuestionsRouter from './job-preparation/interview-questions/interviewQuestion.routes';
+
+import interviewResponseRouter from './job-preparation/candidate-responses/candidateResponse.routes';
+import interviewReportsRouter from './job-preparation/evaluation-reports/evaluationReport.routes';
+import interviewSessionRouter from './job-preparation/interview-sessions/interviewSession.routes';
+
+import alertRoutes from './account/alerts/alert.routes';
+import { CronService } from './account/alerts/cron.service';
+import updateResponseRouter from './account/update-responses/routes';
 import pdfRouter from './utils/generate-pdf/pdfRoutes';
 import helmet from "helmet";
 import webhookRouter from './account/payment/webhook';
 import prisma from './utils/prisma';
+
 // import { createAdapter } from '@socket.io/redis-adapter';
 // import { createClient } from 'redis';
 // import {RedisStore} from "connect-redis";
 
 import { startCronJobs } from './account/payment/cronJobs';
+
 
 const app = express();
 
@@ -142,6 +160,7 @@ export const io = new SocketIOServer(server, {
 app.use('/api/health', routerHealth);
 app.use('/api/account/auth/register', registerRoutes);
 app.use('/api/account/auth/login', loginRoutes);
+app.use('/api/account/update-responses', updateResponseRouter);
 
 app.use('/api/account/auth/forgotPassword', resetPasswordRouter);
 app.use('/api/account/auth/verify', routerOtpVerification);
@@ -152,16 +171,32 @@ app.use('/api/account/auth/getUserDetails', getCurrentUser);
 app.use('/api/account/auth/googleAuth', googleRouter);
 
 app.use('/api/account/contact', contactRouter);
-app.use('/api/account/profile', profileRoutes);
 app.use('/api/account/payment', paymentRouter);
 
+app.use('/api/account/counseling', counselingRouter);
+app.use('/api/account/feedback', feedbackRouter);
 app.use('/api/account/earning', earningRouter);
 app.use('/api/account/notification', notificationRouter);
-app.use('/api/company/subscription', subscriptionRouter);
 
-app.use('/api/company/invoice', invoiceRouter);
-app.use('/api/company/generate-pdf', pdfRouter);
+app.use('/api/account/subscription', subscriptionRouter);
+app.use('/api/account/invoice', invoiceRouter);
+app.use('/api/account/generate-pdf', pdfRouter);
+
+app.use('/api/assessment/evaluation-report', assessmentQuestionRouter);
+app.use('/api/assessment/exam-question', assessmentReportRouter);
+app.use('/api/assessment/exam-session', assessmentResponseRouter);
+app.use('/api/assessment/user-response', assessmentSessionRouter);
+
+app.use('/api/career-explorer', careerExplorerRouter);
+
+app.use('/api/job-preparation/candidate-responses', interviewResponseRouter);
+app.use('/api/job-preparation/evaluation-reports', interviewReportsRouter);
+app.use('/api/job-preparation/interview-questions', interviewQuestionsRouter);
+app.use('/api/job-preparation/interview-sessions', interviewSessionRouter);
+
+app.use('/api/account/alerts', alertRoutes);
 app.use('/api/account/auth/logout', logoutRoute);
+
 
 // Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
 //   io.adapter(createAdapter(pubClient, subClient));
@@ -222,6 +257,7 @@ const PORT = process.env.PORT!;
 server.listen(PORT, '0.0.0.0' as any, () => {
   console.log(`Server is running on port ${PORT}`);
   startCronJobs();
+  CronService.initScheduler();
 });
 
 process.on('SIGINT', async () => {

@@ -92,7 +92,7 @@ export async function suspendOverdueSubscriptions(): Promise<void> {
 
             try {
                
-                await prisma.subscription.update({
+               const userSubscription = await prisma.subscription.update({
                     where: { id: sub.id },
                     data: {
                         isSuspended: true,
@@ -100,6 +100,17 @@ export async function suspendOverdueSubscriptions(): Promise<void> {
                         cancellationDate: new Date(),
                     },
                 });
+
+                await prisma.user.update({
+                    where: {id: userSubscription.userId},
+                    data:{
+                        planType:'Basic',
+                        billingCycle:null,
+                        nextBillingDate:null,
+                        lastPaymentDate:null,
+                        isSuspended: true,
+                    }
+                })
                 
                 console.log(`Suspended Subscription ID ${sub.id}`);
 
